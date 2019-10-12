@@ -1,0 +1,12 @@
+__pycache__/
+build
+*.pyc
+*.aux  
+*.nav  
+*.material.vrb
+*.log
+*.out
+*.snm
+*.toc
+*.vrb
+_minted-material/
