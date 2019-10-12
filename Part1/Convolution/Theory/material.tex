@@ -358,7 +358,7 @@ python3 ../scripts/plot_regular.py
         \par
         Для этого берутся только отсчёты $y[nD]$, где $D$ - коэффициент децимации, то есть формула $(2)$ будет иметь вид:
         \begin{equation}
-            y[nD] = h[n] * x[nD] = \sum_{k=0}^{T - 1} h[k]\hat x[nD - (T - 1) - k] \label{eq:conv_dec}
+            y[nD] = h[n] * x[nD] = \sum_{k=0}^{T - 1} h[k]\hat x[nD + (T - 1) - k] \label{eq:conv_dec}
         \end{equation}
         \par
         Частота дискретизации для $y[nD]$ равна $F_{s}/D$!
@@ -373,8 +373,9 @@ python3 ../scripts/plot_regular.py
                        linenos]{c}
 /* Прототип функции для свёртки с децимацией: */
 int DSP_convolve_decimate(const float* xh, float* y, size_t N, 
-                          const float* f, size_t T, size_t D)
+                          const float* h, size_t T, size_t D)
 {
+    /* ... */
     /* D - коэффициент децимации. */
     return 0;
 }

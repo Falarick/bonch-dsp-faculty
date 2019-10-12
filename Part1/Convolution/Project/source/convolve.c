@@ -1,36 +1,32 @@
 #include "convolve.h"
 
 
-int DSP_convolve(const float* xh, float* y, size_t N, const float* f, size_t T)
+/*!
+ * Функция для свёртки сигнала с ИХ.
+ * \param[in]  xh - входной сигнал, дополненный T - 1 нулями.
+ * \param[out] y - выходной сигнал.
+ * \param[in]  N - длина исходного входной сигнала.
+ * \param[in]  h - ИХ.
+ * \param[in]  T - длина ИХ.
+ * \return 0 - успех, -1 - нереализована.
+ */
+int DSP_convolve(const float* xh, float* y, size_t N, const float* h, size_t T)
 {
-    const float* x = xh + (T - 1);
-
-    for (size_t n = 0; n < N; ++n)
-    {
-        y[n] = 0.0;
-        for (size_t k = 0; k < T; ++k)
-        {
-            y[n] += f[k] * x[n - k]; 
-        }
-    }
-
-    return 0;
+    return -1;
 }
 
-
-int DSP_convolve_decimate(const float* xh, float* y, size_t N, const float* f, size_t T, size_t D)
+/*!
+ * Функция для свёртки с ИХ и децимации сигнала.
+ * \param[in] xh - входной сигнал, дополненный T - 1 нулями.
+ * \param[out] y - выходной сигнал.
+ * \param[in] N - длина исходного входной сигнала.
+ * \param[in] h - ИХ.
+ * \param[in] T - длина ИХ.
+ * \param[in] D - коэффициент децимации.
+ * \return 0 - успех, -1 - нереализована.
+ */
+int DSP_convolve_decimate(const float* xh, float* y, size_t N, 
+                          const float* h, size_t T, size_t D)
 {
-    const float* x = xh + (T - 1);
-
-    for (size_t n = 0; n < N; n += D)
-    {
-        float value = 0.0;
-        for (size_t k = 0; k < T; ++k)
-        {
-            value += f[k] * x[n - k]; 
-        }
-        y[n / D] = value;
-    }
-
-    return 0;
+    return -1;
 }
