@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from utils import *
 
 
-signal    = read_signal("../data/signal.bin")
-decimated = read_signal("../data/decimated.bin")
-flt       = read_signal("../data/filter.bin")
+signal    = read_signal("../data/signal.bin", np.float32)
+decimated = read_signal("../data/decimated.bin", np.float32)
+flt       = read_signal("../data/filter.bin", np.float32)
 
 taps = flt.shape[0]
 

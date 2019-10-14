@@ -69,6 +69,34 @@ void DSP_run_convolve_decimate( )
     DSP_array_float32_delete(result);
 }
 
+void DSP_run_convolve_complex_int( )
+{
+    // Загружаем сигнал из файла.
+    DSP_array_int16* signal = DSP_array_int16_from_file("../data/signal_16bit.bin");
+    // Загружаем фильтр из файла.
+    DSP_array_int16* filter = DSP_array_int16_from_file("../data/filter_16bit.bin");
+    // Создаём филтьтрованный сигнал.
+    size_t shape[2] = {signal->info.shape[0] - (filter->info.shape[0] - 1), signal->info.shape[1]};
+    DSP_array_int16* result = DSP_array_int16_create(shape, signal->info.dim);
+
+    // Запускам свётку.
+    int ret = DSP_convolve_complex_int(
+        signal->values, result->values, 
+        shape[0], filter->values, filter->info.shape[0]
+    );
+    if (ret == 0)
+    {
+        // Записываем результат в файл.
+        DSP_array_int16_to_file(result, "../data/filtered_16bit.bin");
+        printf("3. Run complex integer convolution!\n");
+    }
+
+    // Удаляем сигнал и фильтр из памяти.
+    DSP_array_int16_delete(signal);
+    DSP_array_int16_delete(filter);
+    DSP_array_int16_delete(result);
+}
+
 /*!
  * Точка начала исполнения программы.
  * \param[in] argc - число аргументов командной строки, переданных программе.
@@ -86,6 +114,9 @@ int main(int argc, char** argv)
     // Исполнение свёртки с децимацией.
     DSP_run_convolve_decimate( );
 
+    // Исполнение комплексной целочисленной свёртки.
+    DSP_run_convolve_complex_int( );
+    
     // Возвращание нулеового значения. Индикатор того, что программа завершилась успешно.
     return 0;
 }
