@@ -88,8 +88,8 @@
         \begin{equation}
         \begin{split}
             y[n] &= x[n] * h[n] = \sum_{k = 0}^{T-1}h[k]x[n - k] = \\
-                 &= \sum_{k = 0}^{T-1}h[k]\textrm{Re}\{x[n - k]\} + \sum_{k = 0}^{T-1}h[k]\textrm{Im}\{x[n - k]\} = \\
-                 &= \textrm{Re}\{x[n]\} * h[n] + \textrm{Im}\{x[n]\} * h[n], \label{eq:cconv}
+                 &= \sum_{k = 0}^{T-1}h[k]\textrm{Re}\{x[n - k]\} + j\sum_{k = 0}^{T-1}h[k]\textrm{Im}\{x[n - k]\} = \\
+                 &= \textrm{Re}\{x[n]\} * h[n] + j\textrm{Im}\{x[n]\} * h[n], \label{eq:cconv}
         \end{split}
         \end{equation}
         \par
@@ -115,7 +115,7 @@
                 {
                     $\textrm{Re}\{y[n]\}  \leftarrow \textrm{Re}\{y[n]\} + \textrm{Re}\{\hat x[m - k]\} h[k]$
                     \par
-                    $\textrm{Im}\{y[n]\}  \leftarrow \textrm{Im}\{y[n]\}+ \textrm{Im}\{\hat x[m - k]\} h[k]$
+                    $\textrm{Im}\{y[n]\}  \leftarrow \textrm{Im}\{y[n]\} + \textrm{Im}\{\hat x[m - k]\} h[k]$
                 }
             }
         \end{algorithm}
@@ -137,7 +137,7 @@
     \end{frame}
     \begin{frame}
         \frametitle{Приведение ИХ}
-        {\bf Решение:} $$h_{\texttt{int}}[n] = \texttt{int}_{\textrm{max}} \times \lfloor h_{\texttt{float}}[n] \rfloor \implies y_{\texttt{int}}[n] = \frac{1}{\texttt{int}_{\textrm{max}}}(x_{\texttt{int}}[n] * h_{\texttt{int}}[n]).$$
+        {\bf Решение:} $$h_{\texttt{int}}[n] = \big\lfloor \texttt{int}_{\textrm{max}} \times  h_{\texttt{float}}[n] \big\rfloor \implies y_{\texttt{int}}[n] = \frac{1}{\texttt{int}_{\textrm{max}}}(x_{\texttt{int}}[n] * h_{\texttt{int}}[n]).$$
         \begin{figure}[!tbp]
            \centering
            \includegraphics[width=0.88\textwidth]{pics/IR.png}
