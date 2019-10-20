@@ -10,3 +10,4 @@ build
 *.toc
 *.vrb
 _minted-material/
+.ipynb_checkpoints/

@@ -11,11 +11,12 @@
 /// Типы отсчётов
 typedef enum DSP_DATA_TYPE
 {
-    DSP_UINT8   = 0, ///< int8_t
+    DSP_UINT8   = 0, ///< uint8_t
     DSP_INT16   = 1, ///< int16_t
     DSP_INT32   = 2, ///< int32_t
     DSP_FLOAT32 = 3, ///< float
-    DSP_FLOAT64 = 4  ///< double
+    DSP_FLOAT64 = 4, ///< double
+    DSP_INT8    = 5, ///< int8_t
 } DSP_DATA_TYPE;
 
 /*!
@@ -27,6 +28,10 @@ static inline size_t DSP_sizeof(DSP_DATA_TYPE type)
 {
     switch (type)
     {
+        case DSP_INT8:
+        {
+            return sizeof(int8_t);
+        }
         case DSP_UINT8:
         {
             return sizeof(uint8_t);

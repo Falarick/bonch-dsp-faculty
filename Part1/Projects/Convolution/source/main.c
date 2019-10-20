@@ -9,9 +9,11 @@
 #include <stdio.h>
 
 #include "array/common.h"
+#include "array/int8.h"
 #include "array/uint8.h"
 #include "array/int16.h"
 #include "array/float32.h"
+#include "array/2D.h"
 
 #include "convolve.h"
 
@@ -97,6 +99,41 @@ void DSP_run_convolve_complex_int( )
     DSP_array_int16_delete(result);
 }
 
+void DSP_run_convolve_2D(const char* image_fn, const char* filter_fn, const char* result_fn)
+{
+    // Загружаем сигнал из файла.
+    DSP_array_uint8* signal = DSP_array_uint8_from_file(image_fn);
+    // Загружаем фильтр из файла.
+    DSP_array_int8* filter = DSP_array_int8_from_file(filter_fn);
+    // Создаём филтьтрованный сигнал.
+    DSP_array_uint8* result = DSP_array_uint8_create(signal->info.shape, signal->info.dim);
+
+    uint8_t** signal_2D = DSP_linear22D_uint8(signal->values, signal->info.shape[0], signal->info.shape[1]);
+    uint8_t** result_2D = DSP_linear22D_uint8(result->values, result->info.shape[0], result->info.shape[1]);
+    int8_t**  filter_2D = DSP_linear22D_int8(filter->values, filter->info.shape[0], filter->info.shape[1]);
+
+    // Запускам свётку.
+    int ret = DSP_convolve_2D(
+        signal_2D, result_2D, 
+        signal->info.shape[0], signal->info.shape[1],
+        filter_2D, filter->info.shape[0], filter->info.shape[1]
+    );
+
+    if (ret == 0)
+    {
+        free(result->values);
+        result->values = DSP_2D2linear_uint8(result_2D, result->info.shape[0], result->info.shape[1]);
+        // Записываем результат в файл.
+        DSP_array_uint8_to_file(result, result_fn);
+        printf("4. Run 2D integer convolution!\n");
+    }
+
+    // Удаляем сигнал и фильтр из памяти.
+    DSP_array_uint8_delete(signal);
+    DSP_array_int8_delete(filter);
+    DSP_array_uint8_delete(result);
+}
+
 /*!
  * Точка начала исполнения программы.
  * \param[in] argc - число аргументов командной строки, переданных программе.
@@ -117,6 +154,8 @@ int main(int argc, char** argv)
     // Исполнение комплексной целочисленной свёртки.
     DSP_run_convolve_complex_int( );
     
+    DSP_run_convolve_2D("../data/im_female.bin", "../data/gauss_2D.bin", "../data/fim_female.bin");
+
     // Возвращание нулеового значения. Индикатор того, что программа завершилась успешно.
     return 0;
 }

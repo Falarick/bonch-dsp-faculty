@@ -18,6 +18,8 @@ def type_map(dtype):
         return 3
     if dtype == np.float64:
         return 4
+    if dtype == np.int8:
+        return 5
 
 def to_complex(s):
     return s[:, 0] + 1j * s[:, 1]

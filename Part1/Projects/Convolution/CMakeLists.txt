@@ -12,6 +12,7 @@ SET(HEADERS
     ./include/array/float32.h
     ./include/array/int16.h
     ./include/array/uint8.h
+    ./include/array/int8.h
     ./include/convolve.h
     ./include/types.h)
 
@@ -20,6 +21,7 @@ SET(SOURCES
     ./source/array/float32.c
     ./source/array/int16.c
     ./source/array/uint8.c
+    ./source/array/int8.c
     ./source/convolve.c
     ./source/main.c)
 
