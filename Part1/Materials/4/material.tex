@@ -1,0 +1,133 @@
+\documentclass{beamer}
+
+\mode<presentation> 
+{
+    \usetheme{Madrid}
+}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs} 
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{subfig}
+\usepackage{hyperref}
+\usepackage{ulem}
+\usepackage{ragged2e}
+\usepackage{algorithm2e}
+\usepackage{minted}
+
+\usemintedstyle{borland}
+
+\usefonttheme[onlymath]{serif}
+
+\hypersetup
+{
+    colorlinks=true,
+    linkcolor=white, 
+    urlcolor=cyan
+}
+
+\title[Лекция 4]
+{
+    Лекция 4: Задача сортировка и функции в языке Си (продолжение)
+} 
+
+
+\author[Д. А. Караваев]{Д. А. Караваев}
+
+\institute[СПбГУТ] 
+{
+    Санкт-Петербургский государственный университет телекоммуникаций \\ им. проф. М. А. Бонч-Бруевича \\ 
+    \vspace{0.2cm}
+    Факультет РТС, Кафедра РОС \\
+    \vspace{0.2cm}
+    Факультатив <<Программирование в ЦОС>> \\
+    \vspace{0.2cm}
+    Осень 2019
+}
+
+\date[11.11.2019]{11.11.2019 Санкт-Петербург} 
+
+\begin{document}
+    \begin{frame}
+        \titlepage 
+    \end{frame}
+    \begin{frame}
+        \frametitle{Аргументы функций}
+        \justifying
+        Существует два способа передачи аргументов в функцию:
+        \begin{enumerate}
+            \item {\bf По значению}: в качестве аргументов функции выступают соответствующие {\it копии} значений выражений, переданных в функцию в момент её вызова. Подобный механизм неявно реализован в Си (поведение по-умполчанию).
+            \item {\bf По ссылке}: в качестве аргументов функции выступают {\it синонимы} переменных, переданных функцию. Подобный механизм используется в Java. В Си его можно реализовать явно при помощи {\it указателей}!
+        \end{enumerate}
+        \par
+        {\bf Задача}: Что будет если мы захотим изменить значение той переменной, которая была передана в функцию в качестве параметра?
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Классический пример: функция {\tt swap}}
+        \begin{minted}[frame=lines,         framesep=2mm,
+                       baselinestretch=1.2, fontsize=\footnotesize,
+                       linenos]{c}
+/* Реализуем функцию, которая меняет значения двух переменных. */
+/* Не правильно (оперируем с копиями, а не с самими перемнными): */
+void swap_error(int x, int y)
+{
+    int temp = x;
+    x = y;
+    y = temp;
+}
+/* Правильно: используем указатели (передаём адреса, а не значения): */
+void swap_correct(int* x, int* y)
+{
+    int temp = *x;
+    *x = *y; /* (*x) - синоним переменной x! */
+    *y = temp;
+}
+        \end{minted}
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Задача сортировки}
+        \begin{block}{Формулировка}
+            \justifying
+            {\bf Вход}: Массив $a$ длины $N$;
+            \par
+            {\bf Выход}: Массив $a$ длины $N$: $a[0] \leq a[1] \leq \dotsc \leq a[N - 1]$ (по убыванию).
+        \end{block}
+        \par
+        \begin{algorithm}[H]
+            \DontPrintSemicolon
+            \SetKwFunction{FSort}{InsertionSort}
+            \SetKwFunction{FMinIndex}{MinIndex}
+            \SetKwFunction{FSwap}{Swap}
+
+            \SetKwProg{Fn}{Fuction}{:}{}
+            \Fn{\FSort{$a$ : массив, $N$ : длина $a$}}
+            {
+                \For{$n \leftarrow 0$ \KwTo $N - 1$} 
+                {
+                    $j \leftarrow$ \FMinIndex($a,\ n,\ N$)\;
+                    \FSwap($a[n],\ a[j]$)\;
+                }
+            }
+            \;
+            \Fn{\FMinIndex{$a$ : массив, $begin$ : начало, $end$ : конец}}
+            {
+                // Ваш (псевдо)код тут
+            }
+            \;
+        \end{algorithm}
+        \justifying
+        \par
+        {\bf Замечание}: Простейшим примером сортировки, является сортировка вставками (сложность $O(N^{2})$), основанная на поиске минимума.
+    \end{frame}
+    \begin{frame}
+        \begin{center}
+        \baselineskip 20.0mm
+        \Huge Спасибо за внимание!
+        \end{center}
+    \end{frame}
+\end{document}
