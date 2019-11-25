@@ -11,7 +11,7 @@ sudo apt install gcc cmake
 Сборка проекта:
 
 ```bash
-# В папке проекта Convolution:
+# В папке проекта Sort:
 mkdir build
 cd build 
 cmake ..
@@ -21,7 +21,7 @@ make -j4
 Запуск проекта:
 
 ```bash
-./search
+./sort
 ```
 
 
