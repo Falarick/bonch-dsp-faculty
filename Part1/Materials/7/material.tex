@@ -1,0 +1,304 @@
+\documentclass{beamer}
+
+\mode<presentation> 
+{
+    \usetheme{Madrid}
+}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs} 
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{subfig}
+\usepackage{hyperref}
+\usepackage{ulem}
+\usepackage{ragged2e}
+\usepackage{algorithm2e}
+\usepackage{minted}
+
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+\usemintedstyle{borland}
+
+\usefonttheme[onlymath]{serif}
+
+\hypersetup
+{
+    colorlinks=true,
+    linkcolor=white, 
+    urlcolor=cyan
+}
+
+\title[Лекция 7]
+{
+    Лекция 7: Указатели на функцию в языке Си и создание проектов
+} 
+
+
+\author[Д. А. Караваев]{Д. А. Караваев}
+
+\institute[СПбГУТ] 
+{
+    Санкт-Петербургский государственный университет телекоммуникаций \\ им. проф. М. А. Бонч-Бруевича \\ 
+    \vspace{0.2cm}
+    Факультет РТС, Кафедра РОС \\
+    \vspace{0.2cm}
+    Факультатив <<Программирование в ЦОС>> \\
+    \vspace{0.2cm}
+    Осень 2019
+}
+
+\date[16.12.2019]{16.12.2019 Санкт-Петербург} 
+
+\begin{document}
+    \begin{frame}
+        \titlepage 
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Функция как параметр}
+        \justifying
+        Многие алгоритмы можно сделать зависящими от {\it функционального} параметра во избежание {\bf дублирования} кода:
+        \begin{itemize}
+            \item Алгоритм сортировки: функция сравнения ({\it предикат}) $\implies$ сортировка в возрастающем/убывающем порядке;
+            \item Операция {\tt Reduce}: "обобщённое"\ суммирование (c использование бинарной функции);
+            \item Операция {\tt Map}: преобразование массива по определенном правилу (унарной функции);
+            \item Обобщённый цикл {\tt ForEach};
+            \item $\dotsc$
+        \end{itemize}
+        \par
+        {\bf Вопрос}: Как передать функцию в качестве аргумента другой функции?
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Указатели на функцию}
+        \begin{minted}[frame=lines,         framesep=2mm,
+                       baselinestretch=1.2, fontsize=\footnotesize,
+                       linenos]{c}
+/* Синтаксис: <возвращаемый тип> (* <имя>)(<типы аргументов>): */
+/* Некоторая функция: */
+float sum(float a, float b)
+{
+    return a + b;
+}
+/* Объявление указателя на функцию: */
+float (*sum_another)(float, float) = sum;
+/* Указатель на функцию sum_over - псевдоним функции sum! */
+/* Пример использования: */
+float x = sum_another(1.0, 2.0);
+printf("(sum == sum_another) == %d", (x == sum(1.0, 2.0)));
+/* Результат: (sum == sum_another) == 1. */
+        \end{minted}
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Передача указателя на функцию}
+        \begin{minted}[frame=lines,         framesep=2mm,
+                       baselinestretch=1.2, fontsize=\footnotesize,
+                       linenos]{c}
+/* Функция в качестве аргумента: */
+void merge_sort(int *a, size_t N, int *(comparator)(int, int));
+/* Объявляем "сравниватели": */
+int less(int lhs, int rhs)
+{
+    return a < b;
+}
+int more(int lhs, int rhs)
+{
+    return a > b;
+}
+/* Сортировка по убыванию: */
+merge_sort(a, N, less);
+/* Сортировка по возрастанию: */
+merge_sort(a, N, more);
+        \end{minted}
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Функциональный тип}
+        \begin{minted}[frame=lines,         framesep=2mm,
+                       baselinestretch=1.2, fontsize=\footnotesize,
+                       linenos]{c}
+/* Тип функции с заданными аргументами и значением (!интерфейс!): */
+typedef float *(binary_op)(float, float);
+/* Функции удовлетворяющие типу binary_op: */
+float sum(float a, float b)  { /* ... */ }
+float prod(float a, float b) { /* ... */ }
+/* "Свернуть" массив по правилу: */
+float reduce(float *a, size_t N, binary_op bop, float base)
+{
+    float ret = base;
+    for (size_t i = 0; i < N; ++i)
+    {
+        ret = bop(ret, a[i]);
+    }
+    return ret;
+}
+        \end{minted}
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Вычисление определённого интеграла}
+        \justifying
+        Необходимо вычислить определённый интеграл на промежутке $[a, b]$ от произвольной функции $f(x)$:
+        \begin{equation}
+            S = \int\limits_{a}^{b} f(x) \textrm{d}x
+        \end{equation}
+        \justifying
+        Для этого пользуются геометрической интерпретацией интеграла как площади кривой под функцией $f(x)$. 
+        \par
+        \vspace{0.2cm}
+        \justifying
+        Существует большое множество различный методов {\it численного} интегрирования (Самарский А. А. Введение в численные методы). 
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Метод прямоугольников}
+        \justifying
+        Интервал $[a, b]$ разбивается на {\it равномерную сетку} с шагом $d$: 
+        $$d = (b - a) / N,\ \{x_{i} = a + id\},\ i \in \{0, \dotsc, N - 1\},$$
+        $$S \approx \int\limits_{a}^{b} f(x) \textrm{d}x = d\sum_{i=0}^{N-1}f(x_{i}).$$
+        \par
+        \justifying
+        Т.е. функция $f(x)$ {\it интерполируется} на интервале $(x_{i}, x_{i+1})$ константами (горизонтальными прямыми) (0-ой порядок аппроксимации).
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Метод трапеций}
+        \justifying
+        Интервал $[a, b]$ разбивается на {\it равномерную сетку} с шагом $d$: 
+        $$d = (b - a) / N,\ \{x_{i} = a + id\},\ i \in \{0, \dotsc, N - 1\},$$
+        $$S \approx \int\limits_{a}^{b} f(x) \textrm{d}x = d\sum_{i=0}^{N-1}\frac{f(x_{i}) + f(x_{i + 1})}{2}.$$
+        \par
+        \justifying
+        Функция $f(x)$ {\it интерполируется} на интервале $(x_{i}, x_{i+1})$ прямыми (1-ый порядок аппроксимации).
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Метод Симпсона (парабол)}
+        \justifying
+        Интервал $[a, b]$ разбивается на {\it равномерную сетку} с шагом $d$: 
+        $$d = (b - a) / N,\ \{x_{i} = a + id\},\ i \in \{0, \dotsc, N - 1\},$$
+        $$S \approx \int\limits_{a}^{b} f(x) \textrm{d}x = \frac{d}{6}\sum_{i=0}^{N-1}\big(f(x_{i}) + 4f\Big(\frac{f(x_{i}) + f(x_{i+1})}{2}\Big) + f(x_{i + 1})\big).$$
+        \par
+        \justifying
+        Функция $f(x)$ {\it интерполируется} на интервале $(x_{i}, x_{i+1})$ параболами (2-ой порядок аппроксимации).
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Метод Монте-Карло}
+        \justifying
+        Пусть $u$ - случайная велечина, распределённая равномерно на $[a, b] \implies f(u)$ так же случайная величина со средним:
+        $$\textrm{E}\big\{f(u)\big\} = \int\limits_{a}^{b}f(x)\varphi(x)\textrm{d}x = \frac{1}{b-a}\int\limits_{a}^{b}f(x)\textrm{d}x,$$
+        $$\int\limits_{a}^{b}f(x)\textrm{d}x = (b - a)\textrm{E}\big\{f(u)\big\} \approx \frac{b - a}{N}\sum_{i=0}^{N-1}f(\hat{u}_{i}),$$
+        где $\hat{u}_{i},\ i \in \{0, \dotsc, N - 1\}$ - конкретные значения случайной величины $u$ (выборка размера $N$).
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Задание}
+        \justifying
+        Реализовать один из 4-х методов численного интегрирования в виде функции на языке Си, которая принимает $f(x)$ в качестве параметра:
+        \begin{minted}[frame=lines,         framesep=2mm,
+                       baselinestretch=1.2, fontsize=\footnotesize,
+                       linenos]{c}
+/* Тип функции: */
+typedef float *(unary_function)(float, float);
+/* Прототип функции: */
+float num_integral(float a, float b, unary_function f, size_t N);
+        \end{minted}
+        \par
+        \vspace{0.2cm}
+        \justifying
+        {\bf NB}: Для того чтобы реализовать вычисление методом Монте-Карло необходимо воспользоваться стандартной фукнцией {\tt rand}, подключив заголовочный файл {\tt stdlib}: \url{http://www.cplusplus.com/reference/cstdlib/rand/}.
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Создание проекта}
+        \justifying
+        Создадим проект для решения задачи численного интегрирования:
+        \begin{minted}[frame=lines,        framesep=2mm,
+               baselinestretch=1.2, fontsize=\footnotesize,
+               linenos]{bash}
+# Создадим папку проекта:
+mkdir Integral && cd Integration
+# Создадим папки для файлов с кодом:
+mkdir include source
+# Создадим файлы:
+touch source/main.c source/integral.c include/integral.h CMakelists.txt
+        \end{minted}
+        \par
+        \justifying
+        В языке Си файл с иходным кодом деляться на два типа:
+        \begin{enumerate}
+            \item Заголовочные ({\tt *.h}) - для объявления типов и прототипов (интерфейсный файлы);
+            \item Исходные ({\tt *.c}) - для реализации функций (файлы реализации).  
+        \end{enumerate} 
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Пример: заголовочный/исходный файл}
+        Файл {\tt include/integral.h}:
+        \begin{minted}[frame=lines,        framesep=2mm,
+               baselinestretch=1.2, fontsize=\footnotesize,
+               linenos]{c}
+#include <stdlib.h> /* Подключение стадартного заголовочного файла. */
+/* Тип функции: */
+typedef float *(unary_function)(float, float);
+/* Прототип функции: */
+float num_integral(float a, float b, unary_function f, size_t N);
+        \end{minted}
+        Файл {\tt source/integral.c}:
+        \begin{minted}[frame=lines,        framesep=2mm,
+               baselinestretch=1.2, fontsize=\footnotesize,
+               linenos]{c}
+#include "integral.h" /* Подключение заголовочного файла. */
+/* Определение функции: */
+float num_integral(float a, float b, unary_function f, size_t N)
+{
+    /* ... */
+}
+        \end{minted}
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Пример: файл с функцией {\tt main}}
+        Теперь функцией {\tt num\_integral} можно воспользоваться в функции {\tt main}:
+        \begin{minted}[frame=lines,        framesep=2mm,
+               baselinestretch=1.2, fontsize=\footnotesize,
+               linenos]{c}
+#include <stdio.h> /* Подключение стадартного заголовочного файла. */
+#include <math.h> /* Заголовочный файл с математическим функциями. */
+
+#include "integral.h" /* Подключение заголовочного файла. */
+
+int main()
+{
+    float S = num_integral(0, 3.14 * 5, sin, 1000);
+    printf("S{sin(x)} = %f\n", S);
+    return 0;
+}
+        \end{minted}
+        \par
+        По подобному принципу формируются {\it библиотеки} с исходным кодом, у которых есть некоторое предназначение (библиотека для работы с изображениями {\tt OpenCV}),
+    \end{frame}
+    \begin{frame}[fragile]
+        \frametitle{Пример: файл сборки {\tt CMakeLists.txt}}
+        \justifying
+        Исходный код в исполняемый файл преобразуют компилятор + линковщик. Прямая работа с этими программами неудобна при большом числе файлов в проекте, поэтому существует системы сборки, такие как {\tt cmakе}: \url{https://cmake.org/}.
+        \begin{minted}[frame=lines,        framesep=2mm,
+               baselinestretch=1.2, fontsize=\footnotesize,
+               linenos]{cmake}
+# Создание проекта для сборки с именем:
+PROJECT(Integral C) 
+# Переменная с именем исполняемого файла:
+SET(EXEC_TARGET integral)
+# Добавить папку с заголовочными файлами:
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Переменные со списком заголовочных и исходных файлов:
+SET(HEADERS ./include/integral.h)
+SET(SOURCES ./source/integral.c ./source/main.c)
+# Команда сборки исполняемого файла:
+ADD_EXECUTABLE(${EXEC_TARGET} ${SOURCES})
+        \end{minted}
+    \end{frame}
+    \begin{frame}
+        \begin{center}
+        \baselineskip 20.0mm
+        \Huge Спасибо за внимание!
+        \end{center}
+    \end{frame}
+\end{document}
